@@ -3,147 +3,147 @@
 > A dependency-free survey engine — responder, visual editor, analytics panel and
 > BigQuery output. No build step, no npm install. Open the HTML and it runs.
 
-Motor de encuestas (CSAT / NPS) escrito a mano, sin dependencias y sin build.
-Son archivos estáticos: se abren con doble clic o se publican en cualquier
-hosting. Nació como alternativa propia a SurveyJS y Qualtrics para un proyecto
-de experiencia de clientes, donde el requisito era que el área de negocio
-pudiera editar sus propias encuestas sin pasar por desarrollo.
+A CSAT/NPS survey engine written by hand, with no dependencies and no build. It's
+static files: open them by double-clicking or publish them on any host. It started
+as an in-house alternative to SurveyJS and Qualtrics for a customer-experience
+project where the requirement was that the business team could edit their own
+surveys without going through engineering.
 
-Este repositorio es la **versión pública del motor**: no incluye las encuestas,
-los datos ni la infraestructura de ningún cliente.
-
----
-
-## Por qué sin dependencias
-
-La decisión de fondo: quien escanea un QR llega con el navegador limpio, en un
-teléfono cualquiera, a veces sin señal. Cada kilobyte y cada paso de build es
-una forma de que eso falle. Sin `node_modules`, sin bundler y sin framework, el
-respondedor es HTML y JavaScript que el navegador entiende directo.
-
-El efecto secundario es que el repositorio sigue funcionando dentro de cinco
-años sin que nadie tenga que resolver un árbol de dependencias roto.
+This repository is the **public version of the engine**: it contains no client's
+surveys, data or infrastructure.
 
 ---
 
-## Las cinco pantallas
+## Why no dependencies
 
-| Pantalla | Archivo | Para qué |
-|----------|---------|----------|
-| Portada | `index.html` | Listado, generador de enlaces para QR, exportación |
-| Respondedor | `responder.html?survey=<id>` | Lo que ve quien responde |
-| Editor | `editor.html?survey=<id>` | Editar preguntas, alternativas y lógica |
-| Panel | `panel.html?survey=<id>` | Indicadores, gráficos y filtros |
-| Imprimir | `imprimir.html?survey=<id>` | Formulario en papel y respuestas en PDF |
+The underlying decision: whoever scans a QR code arrives on a clean browser, on
+some phone, sometimes with no signal. Every kilobyte and every build step is a
+way for that to fail. With no `node_modules`, no bundler and no framework, the
+responder is HTML and JavaScript the browser understands directly.
+
+The side effect is that the repository still works five years from now without
+anyone having to untangle a broken dependency tree.
+
+---
+
+## The five screens
+
+| Screen | File | What it's for |
+|--------|------|---------------|
+| Home | `index.html` | Listing, QR link generator, export |
+| Responder | `responder.html?survey=<id>` | What the respondent sees |
+| Editor | `editor.html?survey=<id>` | Edit questions, options and logic |
+| Panel | `panel.html?survey=<id>` | Metrics, charts and filters |
+| Print | `imprimir.html?survey=<id>` | Paper form and answers as PDF |
 
 ```bash
 python3 -m http.server 8791
 ```
 
-Y abre <http://localhost:8791>. También funciona abriendo `index.html` directo
-desde el disco.
+Then open <http://localhost:8791>. It also works opening `index.html` straight
+from disk.
 
 ---
 
-## Qué sabe hacer el motor
+## What the engine can do
 
-**15 tipos de pregunta** — `rating`, `radio`, `checkbox`, `dropdown`, `text`,
+**15 question types** — `rating`, `radio`, `checkbox`, `dropdown`, `text`,
 `comment`, `boolean`, `tagbox`, `matrix`, `ranking`, `multipletext`,
-`imagepicker`, `file`, `signature` y `paneldynamic`.
+`imagepicker`, `file`, `signature` and `paneldynamic`.
 
-**Lógica condicional** con un mini lenguaje de expresiones propio
-(`src/core/expression.js`) para `visibleIf`, `enableIf` y `requiredIf`. La
-sintaxis sigue en espíritu a la de SurveyJS para que a quien venga de ahí le
-resulte familiar:
+**Conditional logic** through a small in-house expression language
+(`src/core/expression.js`) for `visibleIf`, `enableIf` and `requiredIf`. The
+syntax follows SurveyJS in spirit so that anyone coming from there finds it
+familiar:
 
 ```js
-{ id: 'motivo', type: 'comment', visibleIf: '{satisfaccion} <= 2' }
+{ id: 'reason', type: 'comment', visibleIf: '{satisfaction} <= 2' }
 ```
 
-**Disparadores y campos calculados** que se evalúan al avanzar de página, no en
-cada tecla.
+**Triggers and computed fields** evaluated on page advance, not on every
+keystroke.
 
-**Localización** — cualquier etiqueta acepta `{ es: '...', en: '...' }`.
+**Localization** — any label accepts `{ es: '...', en: '...' }`.
 
-**Tolerancia a fallos del navegador.** `src/io/storage.js` asume que
-`localStorage` puede no existir o estar bloqueado (modo incógnito, cookies
-deshabilitadas) y sigue funcionando. Las respuestas se encolan y se reintentan
-al recuperar la conexión.
+**Tolerance for browser failures.** `src/io/storage.js` assumes `localStorage`
+may not exist or may be blocked (private mode, cookies disabled) and keeps
+working. Answers are queued and retried when the connection comes back.
 
 ---
 
-## Arquitectura
+## Architecture
 
 ```
-src/core/     registry.js    registro de encuestas
-              expression.js  mini lenguaje para la lógica condicional
-              model.js       normalización del esquema de encuesta
-              runtime.js     máquina de estado: valores, visibilidad,
-                             navegación, validación, resultado final
+src/core/     registry.js    survey registry
+              expression.js  small language for conditional logic
+              model.js       survey schema normalization
+              runtime.js     state machine: values, visibility,
+                             navigation, validation, final result
 
-src/io/       storage.js     persistencia en navegador + envío al endpoint
-              bigquery.js    forma del registro que viaja a BigQuery
-              analisis.js    agregación de respuestas
+src/io/       storage.js     browser persistence + sending to the endpoint
+              bigquery.js    shape of the record that travels to BigQuery
+              analisis.js    answer aggregation
 
-src/ui/       render.js      los 15 tipos de pregunta
-              responder.js   respondedor
-              editor.js      editor visual, en cinco pestañas
-              panel.js       indicadores y gráficos
-              hub.js         portada
-              imprimir.js    salida a papel y PDF
-              theme.js       tema claro/oscuro
+src/ui/       render.js      the 15 question types
+              responder.js   responder
+              editor.js      visual editor, in five tabs
+              panel.js       metrics and charts
+              hub.js         home
+              imprimir.js    paper and PDF output
+              theme.js       light/dark theme
 ```
 
-La agregación (`src/io/analisis.js`) vive aparte de la interfaz a propósito:
-los conteos se pueden probar sin navegador, que es justamente donde se cometen
-los errores de análisis que nadie ve hasta que el informe ya salió.
+Aggregation (`src/io/analisis.js`) lives apart from the interface on purpose: the
+counts can be tested without a browser, which is exactly where the analysis bugs
+nobody notices until the report is already out get made.
 
 ---
 
-## Salida a BigQuery
+## BigQuery output
 
-El respondedor envía cada respuesta a una función HTTP que escribe en BigQuery.
-`endpoint/index.js` es esa función (Cloud Run / Cloud Functions, Node 18+), y
-`bigquery/` trae el esquema y las vistas:
+The responder sends each answer to an HTTP function that writes to BigQuery.
+`endpoint/index.js` is that function (Cloud Run / Cloud Functions, Node 18+), and
+`bigquery/` holds the schema and views:
 
-| Archivo | Qué crea |
-|---------|----------|
-| `01_esquema.sql` | Tabla de respuestas, particionada y agrupada |
-| `02_vistas.sql` | Vistas de indicadores: CSAT por punto de servicio, causas, ranking |
-| `04_definiciones.sql` | Catálogo de encuestas y versiones |
+| File | What it creates |
+|------|-----------------|
+| `01_esquema.sql` | Answers table, partitioned and clustered |
+| `02_vistas.sql` | Metric views: CSAT by touchpoint, causes, ranking |
+| `04_definiciones.sql` | Survey and version catalog |
 
-Cada cliente escribe en su propio dataset: las respuestas de uno no pueden
-terminar en la infraestructura de otro, porque la factura, los permisos y un
-eventual borrado van juntos. `tools/nuevo_cliente.sh` da de alta un cliente
-nuevo de una sola vez — antes eran siete pasos sueltos y olvidar uno dejaba las
-respuestas rechazadas.
+Each client writes to its own dataset: one client's answers can't end up in
+another's infrastructure, because the bill, the permissions and any eventual
+deletion travel together. `tools/nuevo_cliente.sh` onboards a new client in one
+go — it used to be seven separate steps, and forgetting one left answers being
+rejected.
 
-Sin endpoint configurado (`config.js` con `endpoint: ''`), todo queda en el
-navegador y se exporta a mano desde la portada. El motor funciona igual.
+With no endpoint configured (`config.js` with `endpoint: ''`), everything stays
+in the browser and is exported by hand from the home screen. The engine works
+the same.
 
 ---
 
-## Encuestas de ejemplo
+## Example surveys
 
-- `surveys/demo-tipos.js` — recorre los 15 tipos de pregunta, en dos idiomas.
-  Sirve de referencia al construir encuestas nuevas y de banco de pruebas al
-  tocar el renderizador.
-- `surveys/nps-relacional.js` — un NPS relacional completo.
+- `surveys/demo-tipos.js` — walks through all 15 question types, in two
+  languages. It doubles as a reference when building new surveys and as a test
+  bed when touching the renderer.
+- `surveys/nps-relacional.js` — a complete relational NPS.
 
-`datos/muestra-demo.json` trae 250 respuestas simuladas para que el panel se vea
-con datos al abrirlo por primera vez; el botón **Datos de ejemplo** las carga.
-Están construidas con el motor de verdad, no escritas a mano, así que tienen la
-misma forma que una respuesta real:
+`datos/muestra-demo.json` ships 250 simulated answers so the panel shows data the
+first time you open it; the **Datos de ejemplo** button loads them. They're built
+with the real engine rather than written by hand, so they have the same shape as
+a real answer:
 
 ```bash
 node tools/generar_muestra.js 250 > datos/muestra-demo.json
 ```
 
-Las distribuciones son inventadas. No hay datos de ninguna encuesta real en
-este repositorio.
+The distributions are invented. There is no data from any real survey in this
+repository.
 
 ---
 
-## Licencia
+## License
 
-MIT — ver [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).
