@@ -1,0 +1,11 @@
+{
+  "name": "surveybq-ingest",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Función que recibe las respuestas de surveyBQ y las inserta en BigQuery.",
+  "main": "index.js",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@google-cloud/bigquery": "^7.9.0"
+  }
+}

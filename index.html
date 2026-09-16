@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>surveyBQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow:wght@500;600;700;800&display=swap">
+<link rel="icon" type="image/png" href="assets/marca/bequarks-favicon.png">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+
+<header class="sbq-topbar">
+  <div class="sbq-topbar-inner">
+    <span class="sbq-brand"><img class="sbq-logo" src="assets/marca/bequarks-iso.png" alt="Be Quarks"> surveyBQ <small>Bequarks</small></span>
+    <span class="sbq-spacer"></span>
+    <a class="sbq-btn sbq-btn-sm" href="panel.html">Panel</a>
+    <a class="sbq-btn sbq-btn-sm" href="imprimir.html">Imprimir</a>
+    <a class="sbq-btn sbq-btn-sm" href="editor.html">Editor</a>
+  </div>
+</header>
+
+<main class="sbq-app">
+
+  <h1>Encuestas</h1>
+  <p class="sbq-muted" style="margin-bottom:20px">
+    Motor propio de encuestas. Sin dependencias, sin build: se sirve como archivos estáticos
+    y las respuestas salen en formato BigQuery.
+  </p>
+
+  <div class="sbq-grid" id="sbq-lista"></div>
+
+  <h2 style="margin-top:36px">Enlace para el QR</h2>
+  <div class="sbq-card" id="sbq-enlace"></div>
+
+  <h2 style="margin-top:28px">Respuestas recogidas</h2>
+  <div class="sbq-card" id="sbq-datos"></div>
+
+  <h2 style="margin-top:28px">Envío automático</h2>
+  <div class="sbq-card" id="sbq-config"></div>
+
+  <p class="sbq-muted" style="margin-top:28px">
+    Documentación: <code>README.md</code> · Esquema y carga a BigQuery: <code>bigquery/README.md</code>
+    · Decisiones sobre los archivos fuente: <code>docs/decisiones.md</code>
+  </p>
+
+</main>
+
+<div class="sbq-toast" id="sbq-toast"></div>
+
+<script src="src/core/registry.js"></script>
+<script src="config.js"></script>
+<script src="src/core/expression.js"></script>
+<script src="src/core/model.js"></script>
+<script src="src/core/runtime.js"></script>
+<script src="src/io/storage.js"></script>
+<script src="src/io/bigquery.js"></script>
+<script src="src/ui/theme.js"></script>
+<script src="src/ui/render.js"></script>
+<script src="surveys/nps-relacional.js"></script>
+<script src="surveys/demo-tipos.js"></script>
+<script src="src/ui/hub.js"></script>
+</body>
+</html>

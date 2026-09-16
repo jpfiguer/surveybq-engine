@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Editor · surveyBQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow:wght@500;600;700;800&display=swap">
+<link rel="icon" type="image/png" href="assets/marca/bequarks-favicon.png">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+
+<header class="sbq-topbar">
+  <div class="sbq-topbar-inner" style="max-width:1500px">
+    <a class="sbq-brand" href="index.html" style="text-decoration:none;color:inherit">
+      <img class="sbq-logo" src="assets/marca/bequarks-iso.png" alt="Be Quarks">
+            surveyBQ <small>editor</small>
+    </a>
+    <select class="sbq-select" id="sbq-picker" style="width:auto;min-width:210px"></select>
+
+    <span class="sbq-hist">
+      <button class="sbq-icon-btn" id="btn-deshacer" title="Deshacer (⌘Z)" aria-label="Deshacer">↶</button>
+      <button class="sbq-icon-btn" id="btn-rehacer" title="Rehacer (⇧⌘Z)" aria-label="Rehacer">↷</button>
+    </span>
+
+    <span class="sbq-spacer"></span>
+    <span id="sbq-status" class="sbq-row"></span>
+    <button class="sbq-btn sbq-btn-sm" id="btn-responder">Probar</button>
+    <button class="sbq-btn sbq-btn-sm sbq-btn-primary" id="btn-guardar">Guardar</button>
+      <button class="sbq-btn sbq-btn-sm" id="btn-publicar" title="Deja los cambios visibles para quien responde">Publicar</button>
+  </div>
+
+  <div class="sbq-topbar-inner" style="max-width:1500px;padding-top:0;padding-bottom:8px">
+    <nav class="sbq-tabs" id="sbq-tabs" role="tablist" style="margin:0"></nav>
+    <span class="sbq-spacer"></span>
+    <button class="sbq-btn sbq-btn-sm" id="btn-importar">Importar</button>
+    <button class="sbq-btn sbq-btn-sm" id="btn-json">JSON</button>
+    <button class="sbq-btn sbq-btn-sm" id="btn-js">.js</button>
+    <button class="sbq-btn sbq-btn-sm sbq-btn-danger" id="btn-restaurar">Restaurar</button>
+  </div>
+</header>
+
+<div class="sbq-editor">
+
+  <!-- ------------------------------------------------------- DISEÑADOR -->
+  <section class="sbq-tabpanel" id="tab-disenador" role="tabpanel">
+    <div class="sbq-editor-cols">
+
+      <div class="sbq-editor-col is-sticky">
+        <div class="sbq-panel">
+          <div class="sbq-panel-head">
+            Estructura
+            <span class="sbq-spacer"></span>
+            <button class="sbq-btn sbq-btn-sm" id="btn-pagina">+ Página</button>
+          </div>
+          <div class="sbq-panel-body is-flush">
+            <ul class="sbq-tree" id="sbq-tree"></ul>
+          </div>
+        </div>
+
+        <div class="sbq-panel" style="margin-top:14px">
+          <div class="sbq-panel-head">Agregar pregunta</div>
+          <div class="sbq-panel-body is-flush">
+            <div class="sbq-toolbox" id="sbq-toolbox"></div>
+          </div>
+        </div>
+
+        <div class="sbq-panel" style="margin-top:14px">
+          <div class="sbq-panel-head">Revisión</div>
+          <div class="sbq-panel-body" id="sbq-issues"></div>
+        </div>
+      </div>
+
+      <div class="sbq-editor-col">
+        <div class="sbq-panel">
+          <div class="sbq-panel-head">
+            Vista previa · así lo verá quien responde
+            <span class="sbq-spacer"></span>
+            <span id="sbq-preview-locale"></span>
+          </div>
+          <div class="sbq-panel-body" id="sbq-preview"></div>
+        </div>
+      </div>
+
+      <div class="sbq-editor-col is-sticky">
+        <div class="sbq-panel">
+          <div class="sbq-panel-head">Propiedades</div>
+          <div class="sbq-panel-body" id="sbq-props"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ----------------------------------------------------------- LÓGICA -->
+  <section class="sbq-tabpanel sbq-hidden" id="tab-logica" role="tabpanel">
+    <div class="sbq-panel">
+      <div class="sbq-panel-head">Reglas de la encuesta</div>
+      <div class="sbq-panel-body" id="sbq-logica"></div>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------- TRADUCCIONES -->
+  <section class="sbq-tabpanel sbq-hidden" id="tab-traducciones" role="tabpanel">
+    <div class="sbq-panel">
+      <div class="sbq-panel-head">
+        Traducciones
+        <span class="sbq-spacer"></span>
+        <span id="sbq-trad-acciones" class="sbq-row"></span>
+      </div>
+      <div class="sbq-panel-body" id="sbq-traducciones"></div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------- TEMA -->
+  <section class="sbq-tabpanel sbq-hidden" id="tab-tema" role="tabpanel">
+    <div class="sbq-editor-cols" style="grid-template-columns:340px minmax(0,1fr)">
+      <div class="sbq-panel">
+        <div class="sbq-panel-head">Apariencia</div>
+        <div class="sbq-panel-body" id="sbq-tema"></div>
+      </div>
+      <div class="sbq-panel">
+        <div class="sbq-panel-head">Vista previa</div>
+        <div class="sbq-panel-body" id="sbq-tema-preview"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------- JSON -->
+  <section class="sbq-tabpanel sbq-hidden" id="tab-json" role="tabpanel">
+    <div class="sbq-panel">
+      <div class="sbq-panel-head">
+        Definición en JSON
+        <span class="sbq-spacer"></span>
+        <span id="sbq-json-estado"></span>
+        <button class="sbq-btn sbq-btn-sm sbq-btn-primary" id="btn-json-aplicar">Aplicar cambios</button>
+      </div>
+      <div class="sbq-panel-body" id="sbq-json"></div>
+    </div>
+  </section>
+
+</div>
+
+<div class="sbq-toast" id="sbq-toast"></div>
+
+<script src="src/core/registry.js"></script>
+<script src="config.js"></script>
+<script src="src/core/expression.js"></script>
+<script src="src/core/model.js"></script>
+<script src="src/core/runtime.js"></script>
+<script src="src/io/storage.js"></script>
+<script src="src/io/bigquery.js"></script>
+<script src="src/ui/theme.js"></script>
+<script src="src/ui/render.js"></script>
+<script src="surveys/nps-relacional.js"></script>
+<script src="surveys/demo-tipos.js"></script>
+<script src="src/ui/editor.js"></script>
+</body>
+</html>

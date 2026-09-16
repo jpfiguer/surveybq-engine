@@ -1,0 +1,21 @@
+# sistema
+.DS_Store
+Thumbs.db
+
+# dependencias y builds
+node_modules/
+.vercel
+
+# entorno
+.env
+.env.*
+!.env.example
+
+# temporales
+*.log
+_preview_tmp.html
+
+# exports de respuestas reales: nunca al repositorio.
+# (datos/muestra-demo.json sí se versiona: es generado y simulado.)
+datos/*
+!datos/muestra-demo.json
